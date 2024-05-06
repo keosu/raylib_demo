@@ -19,7 +19,7 @@ using namespace std;
 // Code by Eric J. Jenislawski
 
 void DrawPoint3D(Vector3 pos, Color color) {
-  if (rlCheckBufferLimit(8)) rlglDraw();
+  // if (rlCheckBufferLimit(8)) rlglDraw();
   rlPushMatrix();
   rlTranslatef(pos.x, pos.y, pos.z);
   rlBegin(RL_LINES);
@@ -36,15 +36,13 @@ void DrawPoint3D(Vector3 pos, Color color) {
 }
 
 Color colorize(int i) {
-  int r, g, b;
-  Color color;
+  unsigned char r, g, b;
   i /= 10;
   r = (i / (64 * 64)) % 255;
   g = 2 * ((i / 128) % 128);
   b = 128 + i % 128;
-  color = {r, g, b, 128};
 
-  return color;
+  return {r, g, b, 128};
 }
 
 int main() {
@@ -62,7 +60,7 @@ int main() {
   SetTargetFPS(30);
 
   unsigned numPoints = 300000;
-  int npf = 30;
+  float npf = 30.0f;
   float ix = 0.0, iy = 1.0, iz = 0.0;
   float p[5] = {2.24, 0.43, -0.65, -2.43, 1.0};
   vector<Vector3> vec_list;
@@ -72,24 +70,24 @@ int main() {
   while (!WindowShouldClose()) {
     // Update
     // The GUI
-    npf = GuiSlider({650, 10, 100, 20}, "K points", npf, 30, 800, true);
+    GuiSlider({650, 10, 100, 20}, "K points", "", &npf, 30, 800);
     numPoints = (unsigned)1000 * npf;
 
-    ix = GuiSlider({150, 10, 100, 20}, "X", "",&ix, -40.0, 40.0);
-    iy = GuiSlider({300, 10, 100, 20}, "Y", "",&iy, -40.0, 40.0);
-    iz = GuiSlider({450, 10, 100, 20}, "Z", "",&iz, -40.0, 40.0);
+    GuiSlider({150, 10, 100, 20}, "X", "", &ix, -40.0, 40.0);
+    GuiSlider({300, 10, 100, 20}, "Y", "", &iy, -40.0, 40.0);
+    GuiSlider({450, 10, 100, 20}, "Z", "", &iz, -40.0, 40.0);
 
-    p[0] = GuiSlider({15, 750, 100, 20},  "A", "", &p[0], -5.0, 5.0);
-    p[1] = GuiSlider({165, 750, 100, 20}, "B", "", &p[1], -5.0, 5.0);
-    p[2] = GuiSlider({315, 750, 100, 20}, "C", "", &p[2], -5.0, 5.0);
-    p[3] = GuiSlider({465, 750, 100, 20}, "D", "", &p[3], -5.0, 5.0);
-    p[4] = GuiSlider({615, 750, 100, 20}, "E", "", &p[4], -5.0, 5.0);
+    GuiSlider({15, 750, 100, 20}, "A", "", &p[0], -5.0, 5.0);
+    GuiSlider({165, 750, 100, 20}, "B", "", &p[1], -5.0, 5.0);
+    GuiSlider({315, 750, 100, 20}, "C", "", &p[2], -5.0, 5.0);
+    GuiSlider({465, 750, 100, 20}, "D", "", &p[3], -5.0, 5.0);
+    GuiSlider({615, 750, 100, 20}, "E", "", &p[4], -5.0, 5.0);
 
     GuiLabel({150, 40, 100, 20}, "Cycle Parameters");
     cycle = GuiCheckBox({250, 40, 20, 20}, "", &cycle);
 
     for (unsigned i = 0; i < 5; i++) {
-      check[i] = GuiCheckBox({15 + (150 * i), 725, 20, 20}, "", &check[i]);
+      check[i] = GuiCheckBox({15.0f + (150 * i), 725, 20, 20}, "", &check[i]);
     }
 
     vec_list.clear();
@@ -137,7 +135,7 @@ int main() {
       DrawPoint3D(vec_list[i], BLUE);
     }
 
-    UpdateCamera(&camera);
+    // UpdateCamera(&camera);
     EndMode3D();
     DrawFPS(10, 10);
     EndDrawing();
