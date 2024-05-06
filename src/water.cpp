@@ -50,7 +50,7 @@ Color colorizer(matter* matArray, int xsize, int zsize, int posx, int posz, Vect
   faderesults =
       Vector3Lerp(blueparts, lightparts,
                   fade);  // Blend our default view with white according to dot product result to give us reflection
-  blue = {faderesults.x, faderesults.y, faderesults.z, 128};  // Return blended result, keeping transparency of 128
+  blue = {(unsigned char)faderesults.x, (unsigned char)faderesults.y, (unsigned char)faderesults.z, 128};  // Return blended result, keeping transparency of 128
   return blue;
 }
 
@@ -163,11 +163,11 @@ int main() {
   camera.up = {0.0f, 1.0f, 0.0f};
   camera.fovy = 60.0f;
   camera.projection = CAMERA_PERSPECTIVE;
-  SetCameraMode(camera, CAMERA_FREE);
+  UpdateCamera(&camera, CAMERA_FREE);
   SetTargetFPS(100);
-  UpdateCamera(&camera);
+  UpdateCamera(&camera, CAMERA_FREE);
 
-  int xsize = 200, zsize = 200;
+  const int xsize = 200, zsize = 200;
   matter matArray[xsize * zsize];
   int num_spheres = 20;
   sphere spheres[20];
@@ -205,7 +205,7 @@ int main() {
   for (int i = 0, posx = 0, posz = 0; i < num_spheres; i++) {
     posx = rand() % xsize;
     posz = rand() % zsize;
-    spheres[i].location = {posx, 1.0, posz};
+    spheres[i].location = {(float)posx, 1.0, (float)posz};
     if (i % 2 == 0) {
       spheres[i].color = GREEN;
     } else {
@@ -223,13 +223,13 @@ int main() {
     }
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {  // Lets you put drops wherever you want
-      RayHitInfo result;
-      result = GetCollisionRayGround(GetMouseRay(GetMousePosition(), camera), 1.0);
-      // cout<<"Hit at X:"<<result.position.x<<"Y"<<result.position.y<<"Z"<<result.position.z<<endl;  //Checks mouse hit
+      RayCollision result;
+      result = GetRayCollisionQuad(GetMouseRay(GetMousePosition(), camera), {0,0,0},{0,1,0},{1,0,0},{1,1,0});
+      // cout<<"Hit at X:"<<result.point.x<<"Y"<<result.point.y<<"Z"<<result.point.z<<endl;  //Checks mouse hit
       // is accurate, seems to be working OK
-      if ((result.position.x > 0) && (result.position.x < xsize) && (result.position.z > 0) &&
-          (result.position.z < zsize)) {  // Discard mouse clicks out-of-bounds or else SEGFAULT on array access
-        matArray[(int)(result.position.x) + xsize * (int)(result.position.z)].height += 20.0;
+      if ((result.point.x > 0) && (result.point.x < xsize) && (result.point.z > 0) &&
+          (result.point.z < zsize)) {  // Discard mouse clicks out-of-bounds or else SEGFAULT on array access
+        matArray[(int)(result.point.x) + xsize * (int)(result.point.z)].height += 20.0;
       }
     }
 
@@ -242,24 +242,24 @@ int main() {
 
     if (IsMouseButtonDown(
             MOUSE_RIGHT_BUTTON)) {  // Right click lets you put boundaries wherever you want, hold E to erase
-      RayHitInfo result;
-      result = GetCollisionRayGround(GetMouseRay(GetMousePosition(), camera), 1.0);
-      // cout<<"Hit at X:"<<result.position.x<<"Y"<<result.position.y<<"Z"<<result.position.z<<endl;  //Checks mouse hit
+      RayCollision result;
+      result = GetRayCollisionQuad(GetMouseRay(GetMousePosition(), camera), {0,0,0},{0,1,0},{1,0,0},{1,1,0});
+      // cout<<"Hit at X:"<<result.point.x<<"Y"<<result.point.y<<"Z"<<result.point.z<<endl;  //Checks mouse hit
       // is accurate, seems to be working OK
-      if ((result.position.x > 0) && (result.position.x < xsize) && (result.position.z > 0) &&
-          (result.position.z < zsize)) {  // Discard mouse clicks out-of-bounds or else SEGFAULT on array access
-        matArray[(int)(result.position.x) + xsize * (int)(result.position.z)].height = 0.0;
-        matArray[(int)(result.position.x) + xsize * (int)(result.position.z)].vel = 0.0;
+      if ((result.point.x > 0) && (result.point.x < xsize) && (result.point.z > 0) &&
+          (result.point.z < zsize)) {  // Discard mouse clicks out-of-bounds or else SEGFAULT on array access
+        matArray[(int)(result.point.x) + xsize * (int)(result.point.z)].height = 0.0;
+        matArray[(int)(result.point.x) + xsize * (int)(result.point.z)].vel = 0.0;
         if (IsKeyDown(KEY_X)) {
           for (int i = 0; i < xsize; i++) {
-            matArray[i + (int)(result.position.z) * xsize].boundary = !IsKeyDown(KEY_E);
+            matArray[i + (int)(result.point.z) * xsize].boundary = !IsKeyDown(KEY_E);
           }
         } else if (IsKeyDown(KEY_Z)) {
           for (int j = 0; j < zsize; j++) {
-            matArray[(int)(result.position.x) + j * xsize].boundary = !IsKeyDown(KEY_E);
+            matArray[(int)(result.point.x) + j * xsize].boundary = !IsKeyDown(KEY_E);
           }
         } else {
-          matArray[(int)(result.position.x) + xsize * (int)(result.position.z)].boundary = !IsKeyDown(KEY_E);
+          matArray[(int)(result.point.x) + xsize * (int)(result.point.z)].boundary = !IsKeyDown(KEY_E);
         }
       }
     }
@@ -283,11 +283,11 @@ int main() {
     BeginMode3D(camera);
     rlDisableDepthTest();
     // DrawGrid(100, 1.0f);
-    DrawGizmo({0, 0, 0});
+    // DrawGizmo({0, 0, 0});======//todo
 
     for (int i = 0; i < xsize; i++) {
       for (int j = 0; j < zsize; j++) {
-        loc = {i, matArray[i + xsize * j].height, j};
+        loc = {(float)i, (float)(matArray[i + xsize * j].height), (float)j};
         DrawCube(loc, 1.0, 1.0, 1.0, colorizer(matArray, xsize, zsize, i, j, camera.position));
         // DrawLine3D(loc,Vector3Add(loc,matArray[i+xsize*j].gradient),ORANGE);  // Uncomment to draw gradient
         // DrawLine3D(loc,Vector3Add(loc,matArray[i+xsize*j].normal),GREEN);  // Uncomment to draw normal to surface
@@ -298,7 +298,7 @@ int main() {
       DrawSphere(spheres[s].location, 1.0, spheres[s].color);
     }
 
-    UpdateCamera(&camera);
+    UpdateCamera(&camera, CAMERA_FREE);
     EndMode3D();
     DrawFPS(10, 10);
     EndDrawing();
