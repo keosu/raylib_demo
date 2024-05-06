@@ -32,18 +32,18 @@ return root;
 };
 
 Vector2 DR2Vec(Vector2 Ccenter, float radius, unsigned int DR, unsigned int Mmod) {
-    Vector2 ret=(Vector2){Ccenter.x+radius*cos(DR*2*PI/Mmod),Ccenter.y+radius*sin(DR*2*PI/Mmod)};
+    Vector2 ret={Ccenter.x+radius*cos(DR*2*PI/Mmod),Ccenter.y+radius*sin(DR*2*PI/Mmod)};
 return ret;
 }
 
 Color colorize(Vector2 vstart, Vector2 vend, float radius) {
     float dist=Vector2Length(Vector2Subtract(vend,vstart))/radius;
-return (Color){dist*255,0,(1-dist)*255,128};
+return {unsigned char(dist*255),0,unsigned char((1-dist)*255),128};
 }
 
 Color colorize2(unsigned int i,unsigned int s) {
     float dist=(float)i/(float)s;
-return (Color){dist*255,0,(1-dist)*255,128};
+return {unsigned char(dist*255),0,unsigned char((1-dist)*255),128};
 }
 
 unsigned int GetMapPoints(Vector2 Ccenter, float Cradius,unsigned int Cmod, unsigned int Cmult, unsigned int Cstart, vector<Vector2>& points){
@@ -127,20 +127,20 @@ int main(void)
 
 
     const int gGuiLeftEdge = 860;
-    Rectangle gBackdrop = (Rectangle) {gGuiLeftEdge-20,0,screenWidth,screenHeight};
-    Rectangle gRec_Cmod = (Rectangle) {gGuiLeftEdge,40,500,20};
-    Rectangle gRec_Cmult = (Rectangle) {gGuiLeftEdge,140,500,20};
-    Rectangle gRec_Cstart = (Rectangle) {gGuiLeftEdge,240,500,20};
-    Vector2 gFPS_location = (Vector2) {gGuiLeftEdge, screenHeight-40};
-    Rectangle gRec_ToggleGroup = (Rectangle) {gFPS_location.x+100,gFPS_location.y,140,20};
+    Rectangle gBackdrop =  {gGuiLeftEdge-20,0,screenWidth,screenHeight};
+    Rectangle gRec_Cmod =  {gGuiLeftEdge,40,500,20};
+    Rectangle gRec_Cmult =  {gGuiLeftEdge,140,500,20};
+    Rectangle gRec_Cstart =  {gGuiLeftEdge,240,500,20};
+    Vector2 gFPS_location =   {gGuiLeftEdge, screenHeight-40};
+    Rectangle gRec_ToggleGroup =  {gFPS_location.x+100,gFPS_location.y,140,20};
 
-    Rectangle gRec_NUDRGraph = (Rectangle) {900,400,404,402};
-    Rectangle gRec_graphMode = (Rectangle) {900,805,200,20};
+    Rectangle gRec_NUDRGraph =  {900,400,404,402};
+    Rectangle gRec_graphMode =  {900,805,200,20};
 
     float Cradius=400;
     Vector2 Ccenter={gGuiLeftEdge/2,screenHeight/2};
 
-    unsigned int colorizerMode=0;
+    int colorizerMode=0;
     bool recalculate=true;
     bool scanValues=false;
     bool scanRecalc=true;
@@ -197,7 +197,7 @@ int main(void)
         //Draw all the lines, colorized as selected
         for (unsigned int i=0;i<points.size()-1;i++) {
             switch (colorizerMode) {
-                case 0: DrawLineV(points[i],points[i+1],(Color){255,0,0,192}); break;
+                case 0: DrawLineV(points[i],points[i+1],{255,0,0,192}); break;
                 case 1: DrawLineV(points[i],points[i+1],colorize(points[i],points[i+1],Cradius)); break;
                 case 2: DrawLineV(points[i],points[i+1],colorize2(i,points.size())); break;
                 default: DrawLineV(points[i],points[i+1],RED); break;
@@ -226,10 +226,10 @@ int main(void)
         DrawText(mytext,gRec_Cstart.x,gRec_Cstart.y+gRec_Cstart.height+30,20,WHITE);
 
         DrawFPS(gFPS_location.x,gFPS_location.y);
-        colorizerMode=GuiToggleGroup(gRec_ToggleGroup,gToggleGroupText,colorizerMode);
+        colorizerMode=GuiToggleGroup(gRec_ToggleGroup,gToggleGroupText,&colorizerMode);
 
         if (scanValues) {
-                graphMode=GuiToggleGroup(gRec_graphMode,"By Modulus;By Multiplier",graphMode);
+                graphMode=GuiToggleGroup(gRec_graphMode,"By Modulus;By Multiplier",&graphMode);
                 DrawText("Click twice to change",gRec_graphMode.x,gRec_graphMode.y+gRec_graphMode.height+4,10,GREEN);
                 }
 
@@ -273,7 +273,7 @@ int main(void)
         }  //End Scan values graph
 
         if (showHelp) {
-            Rectangle gShow_Help = (Rectangle) {300,200,800,400};
+            Rectangle gShow_Help =  {300,200,800,400};
             DrawRectangleRec(gShow_Help,Fade(BLACK,0.8));
             DrawRectangleLinesEx(gShow_Help,2,DARKGRAY);
             DrawText(gHelpText,gShow_Help.x+10,gShow_Help.y+10,20,WHITE);

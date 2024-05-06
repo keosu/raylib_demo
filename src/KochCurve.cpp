@@ -14,7 +14,7 @@ struct line {
     Color color;
 };
 
-Vector2 Vector2Rotate(Vector2 vec, float angle) {
+Vector2 Vector2Rotatex(Vector2 vec, float angle) {
     float len=Vector2Length(vec);
     float theta=atan2(vec.y,vec.x);
     Vector2 rval={len*cos(theta+angle),len*sin(theta+angle)};
@@ -28,51 +28,51 @@ int main()
     SetWindowPosition(500,50);
 
     Camera camera = { 0 };
-    camera.position = (Vector3){10.0, 0.0, 10.0};
-    camera.target=(Vector3){0.0,0.0,0.0};
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.position = {10.0, 0.0, 10.0};
+    camera.target={0.0,0.0,0.0};
+    camera.up = { 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-    SetCameraMode(camera,CAMERA_FREE);
+    UpdateCamera(&camera,CAMERA_FREE);
     SetTargetFPS(30);
 
     line linetemp, linenew;
     Vector2 midpt1, midpt2;
-    uint vsize, counter=0;
-    int levels=2, oldlevels=2;
+    unsigned vsize, counter=0;
+    float levels=2, oldlevels=2;
     bool draw_analysis=false;
 
     deque<line> LineList;
     // Draw our initial figure
-    line initiator = {(Vector2){200,200},(Vector2){800,200},BLUE};
+    line initiator = {{200,200},{800,200},BLUE};
     LineList.push_back(initiator);
-    initiator = {(Vector2){800,200},(Vector2){500,200+600*sqrt(3.0)/2.0},BLUE};
+    initiator = {{800,200},{500,float(200+600*sqrt(3.0)/2.0)},BLUE};
     LineList.push_back(initiator);
-    initiator = {(Vector2){500,200+600*sqrt(3.0)/2.0},(Vector2){200,200},BLUE};
+    initiator = {{500,float(200+600*sqrt(3.0)/2.0)},{200,200},BLUE};
     LineList.push_back(initiator);
 
     while (!WindowShouldClose()){
 //Update
 
-        levels=(int)GuiSlider({900,50,60,40},"Levels",levels,1.0,9.0,true);  //Note: at 10 levels there are 786K lines, so FPS starts to drop.  We are beyond visual resolution >8
+        levels= GuiSlider({900,50,60,40},"Levels","", &levels,1.0,9.0);  //Note: at 10 levels there are 786K lines, so FPS starts to drop.  We are beyond visual resolution >8
         if (levels!=oldlevels) {    //If the user changes recursion level, clear counter, clear deque list, and reset initial drawing
             counter=0;
             oldlevels=levels;
             LineList.clear();
-            initiator = {(Vector2){200,200},(Vector2){800,200},BLUE};
+            initiator = {{200,200},{800,200},BLUE};
             LineList.push_back(initiator);
-            initiator = {(Vector2){800,200},(Vector2){500,200+600*sqrt(3.0)/2.0},BLUE};
+            initiator = {{800,200},{500,float(200+600*sqrt(3.0)/2.0)},BLUE};
             LineList.push_back(initiator);
-            initiator = {(Vector2){500,200+600*sqrt(3.0)/2.0},(Vector2){200,200},BLUE};
+            initiator = {{500,float(200+600*sqrt(3.0)/2.0)},{200,200},BLUE};
             LineList.push_back(initiator);
         }
 
-        draw_analysis=GuiCheckBox({900,100,20,20},"Analysis",draw_analysis);
+        draw_analysis=GuiCheckBox({900,100,20,20},"Analysis",&draw_analysis);
 
         counter++;
         if (counter<levels) {
             vsize=LineList.size(); //Need to capture LineList.size() here to make one pass through existing deque items and not new ones we add this cycle
-            for (uint i=0;i<vsize;i++) {
+            for (unsigned i=0;i<vsize;i++) {
                 linetemp = LineList.front();
                 LineList.pop_front();
                 midpt1=Vector2Add(linetemp.startpt,Vector2Scale(Vector2Subtract(linetemp.endpt,linetemp.startpt),1.0/3.0)); //Trisect the line
@@ -81,7 +81,7 @@ int main()
                 LineList.push_back(linenew);
                 linenew={midpt2,linetemp.endpt,BLUE};
                 LineList.push_back(linenew);
-                linenew={midpt1,Vector2Add(midpt1,Vector2Rotate(Vector2Subtract(midpt1,linetemp.startpt),-60*DEG2RAD)),BLUE};
+                linenew={midpt1,Vector2Add(midpt1,Vector2Rotatex(Vector2Subtract(midpt1,linetemp.startpt),-60*DEG2RAD)),BLUE};
                 LineList.push_back(linenew);
                 linenew={linenew.endpt,midpt2,BLUE};
                 LineList.push_back(linenew);
@@ -94,7 +94,7 @@ int main()
         BeginDrawing();
         ClearBackground(BLACK);
 
-        for (uint i=0;i<LineList.size();i++) {
+        for (unsigned i=0;i<LineList.size();i++) {
             DrawLineV(LineList[i].startpt,LineList[i].endpt,LineList[i].color);
         }
         if (draw_analysis) {

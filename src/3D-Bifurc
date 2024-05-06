@@ -39,7 +39,7 @@ Color colorize(int i) {
     r=(i/(64*64))%255;
     g=2*((i/128)%128);
     b=128+i%128;
-    color=(Color){r,g,b,128};
+    color={r,g,b,128};
 
 return color;
 }
@@ -51,17 +51,17 @@ int main()
     SetWindowPosition(500,50);
 
     Camera camera = { 0 };
-    camera.position = (Vector3){30.0, 10.0, 30.0};
-    camera.target=(Vector3){0.0,0.0,0.0};
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.position = {30.0, 10.0, 30.0};
+    camera.target={0.0,0.0,0.0};
+    camera.up = { 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
     SetCameraMode(camera,CAMERA_FREE);
     SetTargetFPS(30);
 
     vector<Vector3> vec_list;
-    uint numPoints=1000;
-    uint split_val=64;
+    unsigned numPoints=1000;
+    unsigned split_val=64;
     Vector3 pos={0.0,0.5,0.0};
     float start_val=0.5;
 
@@ -75,10 +75,10 @@ int main()
     for (float j=0.0;j<8.0;j+=0.002) {
         pos.y=start_val;
         pos.x=j;
-        for (uint i=0;i<split_val;i++){
+        for (unsigned i=0;i<split_val;i++){
             pos.y=pos.x*pos.y*(1.0-pos.y);
         }
-        for (uint i=split_val;i<numPoints;i++){
+        for (unsigned i=split_val;i<numPoints;i++){
             pos.y=pos.x*pos.y*(1.0-pos.y);
             vec_list.push_back(pos);
         }
@@ -89,7 +89,7 @@ int main()
         ClearBackground(BLACK);
         BeginMode3D(camera);
 
-        for (uint i=0;i<vec_list.size();i++){
+        for (unsigned i=0;i<vec_list.size();i++){
             DrawPoint3D(Vector3Scale(vec_list[i],10.0),BLUE);
         }
 

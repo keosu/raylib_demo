@@ -52,28 +52,28 @@ int main()
     SetWindowPosition(500,50);
 
     Camera camera = { 0 };
-    camera.position = (Vector3){50.0, 50.0, 50.0};
-    camera.target=(Vector3){0.0,0.0,0.0};
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.position = {50.0, 50.0, 50.0};
+    camera.target={0.0,0.0,0.0};
+    camera.up = { 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
     SetCameraMode(camera,CAMERA_FREE);
     SetTargetFPS(30);
 
-    uint numPoints=8000;
+    unsigned numPoints=8000;
     float ix=0.0,iy=1.0,iz=0.0;
 
     vector<Vector3>vec_list;
 
     while (!WindowShouldClose()){
 //Update
-    ix=GuiSlider({150,10,50,30},"X",ix,-40.0,40.0,true);
-    iy=GuiSlider({250,10,50,30},"Y",iy,-40.0,40.0,true);
-    iz=GuiSlider({350,10,50,30},"Z",iz,0.0,40.0,true);
+    ix=GuiSlider({150,10,50,30},"X","",&ix,-40.0,40.0);
+    iy=GuiSlider({250,10,50,30},"Y","",&iy,-40.0,40.0);
+    iz=GuiSlider({350,10,50,30},"Z","",&iz,0.0,40.0);
 
     vec_list.clear();
     Vector3 pos={ix,iy,iz};
-    for (uint i=0;i<numPoints;i++){
+    for (unsigned i=0;i<numPoints;i++){
         vec_list.push_back(pos);
         pos=rk4(pos,0.01);
     }
@@ -84,7 +84,7 @@ int main()
         BeginMode3D(camera);
         //DrawGrid(100, 1.0f);
 
-        for (uint i=0;i<numPoints-1;i++){
+        for (unsigned i=0;i<numPoints-1;i++){
             DrawLine3D(vec_list[i],vec_list[i+1],BLUE);
         }
 

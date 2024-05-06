@@ -7,7 +7,7 @@
 #include <cmath> //for cube root
 #include <algorithm> //for remove_if and sort
 #include <iterator> //for next and prev methods for iterators
-
+#include <string>
 using namespace std;
 
 //Raindrop simulator by Eric Jenislawski
@@ -30,16 +30,16 @@ class raindrop{
 
         raindrop(){
 
-            position=(Vector3){dist1(generator),dist1(generator),0.0};
+            position={dist1(generator),dist1(generator),0.0};
             radius=dist2(generator);
             mass=4.0*PI*radius*radius*radius/6.0;  // Mass = volume of hemisphere of this radius
-            velocity={0.0,(mass<10.0)?0.0:mass/-30.0,0.0}; // velocity is a function of mass in this sim.  Keep value of mass/-30 matched to similar line below.
+            velocity={0.0f,(mass<10.0)?0.0f:mass/-30.0f,0.0f}; // velocity is a function of mass in this sim.  Keep value of mass/-30 matched to similar line below.
             coll_flag=0;
         }
 
         void movedrop(){
             if (position.y<-250) {  //If drop reaches bottom of glass, "free-fall" velocity is 10
-                velocity=(Vector3){0.0,-10.0,0.0};
+                velocity={0.0,-10.0,0.0};
             }
             position=Vector3Add(position,velocity);
         }
@@ -93,7 +93,7 @@ class dropcontroller{
                     newdrop.position=it->position;
                     newdrop.radius=dist2(generator); // Randomizes drops in streak using same parameters for new drops
                     newdrop.mass=4.0*newdrop.radius*newdrop.radius*newdrop.radius*PI/6.0;
-                    newdrop.velocity=(Vector3){0.0,0.0,0.0};
+                    newdrop.velocity={0.0,0.0,0.0};
                     newdrop.coll_flag=0;
                     streaks.push_back(newdrop);
                     it->mass-=newdrop.mass; // We decrease the mass and radius of the drop to account for part of it breaking off
@@ -120,13 +120,13 @@ class dropcontroller{
 
         //Custom sort: See less-than operator overload in drop class
         sort(drops.begin(),drops.end());
-        uint dsize=drops.size();
+        unsigned dsize=drops.size();
 
         int CFnum=0;
 
         //First pass = we just detect 2 or more drops that have collided
-        for (uint i=0;i<dsize-2;i++) {
-            for (uint j=i+1;j<dsize-1;j++) {
+        for (unsigned i=0;i<dsize-2;i++) {
+            for (unsigned j=i+1;j<dsize-1;j++) {
                 //The magic of sorting: Because the list is sorted, once the right-hand side of drop[i] is less than the left-hand side of drop[j], we've detected possible collisions, since
                 //the list is sorted by left & right x coordinate boundaries.  So then we break out of inner for-loop.  Not perfect, but very good for the speed improvement.
                 if (drops[i].position.x+drops[i].radius<drops[j].position.x-drops[j].radius) {break;}
@@ -155,7 +155,7 @@ class dropcontroller{
             }
             counter=0;
             temp_mass=0.0;
-            temp_pos=(Vector3){0.0,0.0,0.0};
+            temp_pos={0.0,0.0,0.0};
             for (vector<raindrop>::iterator it2=coalesced.begin();it2!=coalesced.end();it2++){ //Coalesce everything with the same collflag into one new drop
                 temp_pos=Vector3Add(temp_pos,it2->position);
                 counter++;
@@ -165,7 +165,7 @@ class dropcontroller{
             newdrop.position=temp_pos;                             // Nonetheless, looks good because surface tension tends to pull real drops around when they coalesce.
             newdrop.mass=temp_mass;
             newdrop.radius=cbrt(6.0*temp_mass/(4.0*PI));
-            newdrop.velocity=Vector3{0.0,((temp_mass<10.0)?0.0:temp_mass/-30.0),0.0};
+            newdrop.velocity=Vector3{0.0f,float((temp_mass<10.0)?0.0:temp_mass/-30.0),0.0f};
             newdrop.coll_flag=0;
             newdrops.push_back(newdrop);
         }
@@ -186,7 +186,7 @@ class dropcontroller{
 
 // Used in render loop to make faster-moving drops more oblong.  Can be disabled below.
 Vector3 shaper(raindrop r) {
-    Vector3 scale=(Vector3){1.0,1.0,1.0};
+    Vector3 scale={1.0,1.0,1.0};
     if (r.velocity.y>-0.1) {return Vector3Scale(scale,r.radius);}
     if (r.velocity.y<-9.9) {return Vector3Scale(scale,r.radius);} //If vel<-10, drop is probably in free-fall, so resume spherical shape.
     scale.y=1.0+(-0.08*r.velocity.y); // Change -0.08 factor to your taste.
@@ -208,9 +208,9 @@ int main()
 
     // Define the camera to look into our 3d world
     Camera camera = { 0 };
-    camera.position = (Vector3){0.0, 0.0, -500.0};
-    camera.target=(Vector3){0.0,0.0,0.0};
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.position = {0.0, 0.0, -500.0};
+    camera.target={0.0,0.0,0.0};
+    camera.up = { 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
@@ -227,22 +227,22 @@ int main()
     Texture2D background=LoadTextureFromImage(GenImagePerlinNoise(500,500,1,1,1.0));
     Vector3 bg_pos={0.0,0.0,100.0};
     Model background_plane=LoadModelFromMesh(planemesh);
-    SetMaterialTexture(&background_plane.materials[0],MAP_DIFFUSE,background);
+    SetMaterialTexture(&background_plane.materials[0],MATERIAL_MAP_DIFFUSE,background);
     Color bg_color={200,200,255,255};
 
     //Make the raindrop model
-    Image temp=GenImageGradientH(100,100,(Color){0,0,64,127},(Color){255,255,255,127});
-    Image temp2=GenImageGradientH(100,100,(Color){255,255,255,128},(Color){0,0,64,128});
-    Image myimage=GenImageColor(200,100,(Color){255,255,255,0});
-    ImageDraw(&myimage,temp,(Rectangle){0,0,100,100},(Rectangle){0,0,100,100});
-    ImageDraw(&myimage,temp2,(Rectangle){0,0,100,100},(Rectangle){100,0,200,100});
+    Image temp=GenImageGradientLinear(100,100,0,{0,0,64,127},{255,255,255,127});
+    Image temp2=GenImageGradientLinear(100,100,0,{255,255,255,128},{0,0,64,128});
+    Image myimage=GenImageColor(200,100,{255,255,255,0});
+    ImageDraw(&myimage,temp,{0,0,100,100},{0,0,100,100},BLACK);
+    ImageDraw(&myimage,temp2,{0,0,100,100},{100,0,200,100},BLACK);
     Texture2D mytexture=LoadTextureFromImage(myimage);
     UnloadImage(myimage);
     UnloadImage(temp);
     UnloadImage(temp2);
     Mesh hemi=GenMeshSphere(1.0,12,12); // simpler sphere mesh to push fewer vertices
     Model droplet=LoadModelFromMesh(hemi);
-    SetMaterialTexture(&droplet.materials[0],MAP_DIFFUSE,mytexture);
+    SetMaterialTexture(&droplet.materials[0],MATERIAL_MAP_DIFFUSE,mytexture);
     //droplet.materials[0].ior=1.4;
 
     SetTargetFPS(30);
@@ -263,11 +263,11 @@ int main()
 
     BeginMode3D(camera);
     DrawModel(background_plane,bg_pos,2.0,bg_color);
-    DrawModelEx(glass,glass_position,glass_rotation_axis,glass_rotation_angle,(Vector3){1.0,1.0,1.0},glass_color);
+    DrawModelEx(glass,glass_position,glass_rotation_axis,glass_rotation_angle,{1.0,1.0,1.0},glass_color);
     //DrawGizmo(glass_position);
     for (vector<raindrop>::iterator it=my_dc.drops.begin();it!=my_dc.drops.end();++it){
        //DrawModel(droplet,it->position,it->radius,WHITE);  //If you don't want drop shaping as a function of speed, use this line and comment out the one below.  May help performance a little.
-       DrawModelEx(droplet,it->position,(Vector3){1.0,0.0,0.0},0.0,shaper(*it),WHITE);
+       DrawModelEx(droplet,it->position,{1.0,0.0,0.0},0.0,shaper(*it),WHITE);
     }
     EndMode3D();
 

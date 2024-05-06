@@ -39,8 +39,8 @@ int main()
     SetWindowPosition(600,50);
 
     Camera2D camera = { 0 };
-    camera.target = (Vector2){ 0, 0 };
-    camera.offset = (Vector2){ 0, 0 };
+    camera.target = { 0, 0 };
+    camera.offset = { 0, 0 };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
@@ -57,7 +57,7 @@ int main()
     for (float x=-8;x<=8;x+=.5)
     {
         for (float y=-8;y<8;y+=step){
-            pc.push_back((Vector2){x,y});
+            pc.push_back({x,y});
         }
     }
 
@@ -65,7 +65,7 @@ int main()
     for (float y=-8;y<=8;y+=.5)
     {
         for (float x=-8;x<8;x+=step){
-            pc.push_back((Vector2){x,y});
+            pc.push_back({x,y});
         }
     }
 
@@ -76,7 +76,7 @@ int main()
 
     //Point for the function we wish to plot
     for (float x=-4;x<4.0;x+=step/8.0) {
-        fc.push_back({x,2.0*sin(x*2.0*PI)});
+        fc.push_back({x,2.0f*sin(x*2.0*PI)});
         //fc.push_back({x,sqrt(4-x*x)});
         //fc.push_back({x,-1.0*sqrt(4-x*x)});
     }
