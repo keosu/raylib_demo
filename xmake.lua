@@ -32,4 +32,18 @@ target("ModCircles")
     add_files("src/ModCircles.cpp")
     add_packages("raylib")
     add_packages("raygui")
-    
+
+target("Water")
+    add_files("src/water.cpp")
+    add_packages("raylib")
+    add_packages("raygui")
+
+target("LorenzAttractor")
+    add_files("src/LorenzAttractor.cpp")
+    add_packages("raylib")
+    add_packages("raygui")
+
+target("StrangeAttractor")
+    add_files("src/StrangeAttractor.cpp")
+    add_packages("raylib")
+    add_packages("raygui")

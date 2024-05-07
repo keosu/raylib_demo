@@ -55,7 +55,7 @@ int main() {
   SetTargetFPS(30);
 
   unsigned numPoints = 8000;
-  float ix = 0.0, iy = 1.0, iz = 20.0;
+  float ix = 0.0, iy = 1.0, iz = 0.0;
 
   vector<Vector3> vec_list;
 
