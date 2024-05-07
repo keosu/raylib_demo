@@ -47,3 +47,7 @@ target("StrangeAttractor")
     add_files("src/StrangeAttractor.cpp")
     add_packages("raylib")
     add_packages("raygui")
+
+target("SolarSystem")
+    add_files("src/solarsystem.cpp")
+    add_packages("raylib") 
