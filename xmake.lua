@@ -48,6 +48,16 @@ target("StrangeAttractor")
     add_packages("raylib")
     add_packages("raygui")
 
+target("3D-Bifurc")
+    add_files("src/3D-Bifurc.cpp")
+    add_packages("raylib")
+    add_packages("raygui")
+
+target("ApollonianGasket")
+    add_files("src/ApollonianGasket.cpp")
+    add_packages("raylib")
+    add_packages("raygui")
+
 target("SolarSystem")
     add_files("src/solarsystem.cpp")
     add_packages("raylib") 
