@@ -8,64 +8,11 @@ add_requires("raygui 4.*")
 --     add_ldflags("-subsystem:windows", "-entry:mainCRTStartup", {force = true}) 
 -- end
 
--- for _, filepath in ipairs(os.files("src/**.cpp")) do
--- target(path.basename(filepath))
---     add_files(filepath)
---     set_rundir(path.directory(filepath))
---     add_packages("raylib")
---     add_packages("raygui")
--- end
-
-target("raindrops")
-    add_files("src/raindrops.cpp")
+for _, filepath in ipairs(os.files("src/**.cpp")) do
+target(path.basename(filepath))
+    add_files(filepath)
+    set_rundir(path.directory(filepath))
     add_packages("raylib")
     add_packages("raygui")
-
-target("KochCurve")
-    add_files("src/KochCurve.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("ApollonianGasket")
-    add_files("src/ApollonianGasket.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("ModCircles")
-    add_files("src/ModCircles.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("Water")
-    add_files("src/water.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("LorenzAttractor")
-    add_files("src/LorenzAttractor.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("StrangeAttractor")
-    add_files("src/StrangeAttractor.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("3D-Bifurc")
-    add_files("src/3D-Bifurc.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("ApollonianGasket")
-    add_files("src/ApollonianGasket.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
-
-target("SolarSystem")
-    add_files("src/solarsystem.cpp")
-    add_packages("raylib") 
-
-target("3dSierpinski-IFS")
-    add_files("src/3dSierpinski-IFS.cpp")
-    add_packages("raylib")
-    add_packages("raygui")
+end
+ 

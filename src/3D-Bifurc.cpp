@@ -83,7 +83,7 @@ int main() {
       }
     }
 
-    UpdateCamera(&camera, CAMERA_FREE);
+    // UpdateCamera(&camera, CAMERA_FREE);
 
     // Draw
     BeginDrawing();

@@ -51,12 +51,11 @@ int main() {
   SetWindowPosition(500, 50);
 
   Camera camera = {0};
-  camera.position = {30.0, 10.0, 30.0};
+  camera.position = {6.0, 2.0, 6.0};
   camera.target = {0.0, 0.0, 0.0};
   camera.up = {0.0f, 1.0f, 0.0f};
   camera.fovy = 60.0f;
   camera.projection = CAMERA_PERSPECTIVE;
-  UpdateCamera(&camera, CAMERA_FREE);
   SetTargetFPS(30);
 
   unsigned numPoints = 300000;
@@ -69,6 +68,8 @@ int main() {
 
   while (!WindowShouldClose()) {
     // Update
+
+    UpdateCamera(&camera, CAMERA_ORBITAL);
     // The GUI
     GuiSlider({650, 10, 100, 20}, "K points", "", &npf, 30, 800);
     numPoints = (unsigned)1000 * npf;
@@ -84,10 +85,10 @@ int main() {
     GuiSlider({615, 750, 100, 20}, "E", "", &p[4], -5.0, 5.0);
 
     GuiLabel({150, 40, 100, 20}, "Cycle Parameters");
-    cycle = GuiCheckBox({250, 40, 20, 20}, "", &cycle);
+    GuiCheckBox({250, 40, 20, 20}, "", &cycle);
 
     for (unsigned i = 0; i < 5; i++) {
-      check[i] = GuiCheckBox({15.0f + (150 * i), 725, 20, 20}, "", &check[i]);
+      GuiCheckBox({15.0f + (150 * i), 725, 20, 20}, "", &check[i]);
     }
 
     vec_list.clear();
@@ -135,7 +136,6 @@ int main() {
       DrawPoint3D(vec_list[i], BLUE);
     }
 
-    // UpdateCamera(&camera);
     EndMode3D();
     DrawFPS(10, 10);
     EndDrawing();

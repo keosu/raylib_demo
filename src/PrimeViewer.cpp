@@ -36,7 +36,7 @@ int main() {
   unsigned int maxval = 1000000;
   unsigned int bound;
   int viewmode = 1;
-  int transparency = 64, lowerval = 2, upperval = 1000;
+  float transparency = 64, lowerval = 2, upperval = 1000;
   float factorbase = 60;
   int fbase = 60;
   bool boolDrawPrimes = true;
@@ -69,12 +69,12 @@ int main() {
   camera.up = {0.0f, 1.0f, 0.0f};
   camera.fovy = 60.0f;
   camera.projection = CAMERA_PERSPECTIVE;
-  SetCameraMode(camera, CAMERA_FREE);
   SetTargetFPS(60);
 
   // LOOP
 
   while (!WindowShouldClose()) {
+    UpdateCamera(&camera, CAMERA_THIRD_PERSON);
     // Process any input here
     if (IsKeyPressed(KEY_ONE)) {
       viewmode = 1;
@@ -95,16 +95,15 @@ int main() {
       ClearBackground(BLACK);
       BeginMode3D(camera);
       DrawGrid(100, 1.0f);
-      DrawGizmo({0, 0, 0});
+      // DrawGizmo({0, 0, 0});
 
       for (unsigned i = 2; i < maxval; i++) {
         if (plist[i] == 1) {
-          position = {(i % 100), ((i / 100) % 100), ((i / 10000) % 100)};
+          position = {float(i % 100), float((i / 100) % 100), float((i / 10000) % 100)};
           DrawCubeV(Vector3Subtract(position, posOffset), unitV, cubecol);
         }
       }
-
-      UpdateCamera(&camera);
+ 
       EndMode3D();
       DrawFPS(10, 10);
       EndDrawing();
@@ -116,25 +115,24 @@ int main() {
       ClearBackground(BLACK);
       BeginMode3D(camera);
       DrawGrid(100, 1.0f);
-      DrawGizmo({0, 0, 0});
+      // DrawGizmo({0, 0, 0});
 
       for (unsigned i = 2; i < maxval; i++) {
         if ((plist[i] == 1) && (boolDrawPrimes)) {
-          position = {(i % 100f), ((i / 100f) % 100), ((i / 10000f) % 100)};
+          position = {float(i % 100), float((i / 100) % 100), float((i / 10000) % 100)};
           DrawCubeV(Vector3Subtract(position, posOffset), unitV, RAYWHITE);
         }
         if ((plist[i] > lowerval) && (plist[i] < upperval)) {
-          position = {(i % 100f), ((i / 100f) % 100), ((i / 10000f) % 100)};
+          position = {float(i % 100), float((i / 100) % 100), float((i / 10000) % 100)};
           DrawCubeV(Vector3Subtract(position, posOffset), unitV, cubecolor(plist[i], transparency));
         }
       }
 
-      UpdateCamera(&camera);
       EndMode3D();
-      transparency = GuiSlider({200, 10, 100, 10}, "Transparency", "", &transparency, 16, 255);
-      boolDrawPrimes = GuiCheckBox({350, 10, 10, 10}, "Draw Primes", boolDrawPrimes);
-      lowerval = GuiSlider({200, 30, 400, 10}, "Draw factors above:","", & lowerval, 2, 1000);
-      upperval = GuiSlider({200, 50, 400, 10}, "Draw factors below:", "", &upperval, 2, 1000);
+      GuiSlider({200, 10, 100, 10}, "Transparency", "", &transparency, 16, 255);
+      GuiCheckBox({350, 10, 10, 10}, "Draw Primes", &boolDrawPrimes);
+      GuiSlider({200, 30, 400, 10}, "Draw factors above:", "", &lowerval, 2, 1000);
+      GuiSlider({200, 50, 400, 10}, "Draw factors below:", "", &upperval, 2, 1000);
       DrawFPS(10, 10);
       EndDrawing();
     }
@@ -160,7 +158,7 @@ int main() {
         }
       }
 
-      GuiSpinner({5, 30, 100, 40}, &fbase, 2, 180, false);
+      GuiSpinner({5, 30, 100, 40}, "spinner",&fbase, 2, 180,true);
       factorbase = (float)fbase;
       DrawFPS(10, 10);
       EndDrawing();
@@ -183,7 +181,7 @@ int main() {
         }
       }
 
-      GuiSpinner({5, 30, 100, 40},"spinner",&fbase, 2, 100, false);
+      GuiSpinner({5, 30, 100, 40}, "spinner", &fbase, 2, 100, false);
       factorbase = (float)fbase;
 
       DrawFPS(10, 10);
