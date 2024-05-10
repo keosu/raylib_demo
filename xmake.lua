@@ -4,6 +4,9 @@ set_languages("c++17")
 add_requires("raylib 5.*")
 add_requires("raygui 4.*") 
 
+-- if is_os("windows") then
+--     add_ldflags("-subsystem:windows", "-entry:mainCRTStartup", {force = true}) 
+-- end
 
 -- for _, filepath in ipairs(os.files("src/**.cpp")) do
 -- target(path.basename(filepath))
@@ -61,3 +64,8 @@ target("ApollonianGasket")
 target("SolarSystem")
     add_files("src/solarsystem.cpp")
     add_packages("raylib") 
+
+target("3dSierpinski-IFS")
+    add_files("src/3dSierpinski-IFS.cpp")
+    add_packages("raylib")
+    add_packages("raygui")
